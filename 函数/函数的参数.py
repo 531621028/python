@@ -44,3 +44,11 @@ person('Jack', 24, job='Engineer')
 def person(name, age, *arg, job):
     print(name, age, arg, job)
 person('Jack', 28,job='Engineer')
+
+
+
+
+
+
+#总结
+#默认参数在调用的时候可以传入k=2,或者直接传入2
