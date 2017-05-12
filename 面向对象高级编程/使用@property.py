@@ -12,4 +12,4 @@ class Student(object):
 s = Student()
 s.score = 60
 print(s.score)
-s.score = 1000
+s.score = 100
