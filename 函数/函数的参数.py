@@ -45,10 +45,11 @@ def person(name, age, *arg, job):
     print(name, age, arg, job)
 person('Jack', 28,job='Engineer')
 
+def canshu(name,age):
+    print("name is %s,age is %a"%(name,age))
 
-
-
+canshu('c',age=12)
 
 
 #总结
-#默认参数在调用的时候可以传入k=2,或者直接传入2
+#默认参数在调用的时候可以传入k=2,或者直接传入2,默认参数可以省略，一般参数不能省略
