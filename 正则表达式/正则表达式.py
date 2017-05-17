@@ -28,4 +28,6 @@ print(email.match('someone@gmail.com').groups())
 print(email.match('bill.gates@microsoft.com').groups())
 email = re.compile(r'\<(\S+?)\s(\S+?)\>\s(\S+?)@(\S+?).org$')
 print(email.match('<Tom Paris> tom@voyager.org').groups())
+url = re.compile(r'^(https://)([A-Za-z0-9.]+)/([A-Za-z0-9_]+).([a-z]+)$')
+print(url.match('https://pic1.zhimg.com/7754c831451993841cd23eaa26613754_xs.jpg').groups())
 
