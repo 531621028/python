@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import os,time
 import re
+try:
+  import cPickle as pickle
+except ImportError:
+  import pickle
 
 # 构造 Request headers
 headers = {
@@ -60,7 +64,7 @@ data = ungzip(response.text)
 soup = BeautifulSoup(data,'lxml')
 with open('zhihu.html','wb') as f:
 	f.write(response.content)
-
+#获取每一个回答的内容列表
 anwsers = soup.find_all(class_='List-item')
 re_imageurl = re.compile(r'^(http)')
 print(len(anwsers))
