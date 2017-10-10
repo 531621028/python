@@ -2,12 +2,15 @@
 
 from PyQt5 import QtGui,QtCore,QtWidgets
 import sys
+import Calculator
+import logging
 
 class MainUi(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
         self.isCalculate = False
+        self.result = 0.0
 
     def initUI(self):
         #self.setGeometry(100, 80, 270, 300)
@@ -34,7 +37,7 @@ class MainUi(QtWidgets.QWidget):
     def initBtnBox(self):
         self.buttonBox = QtWidgets.QGroupBox()
         layout = QtWidgets.QGridLayout()
-        names = ['Cls', 'Bck', '', 'Close',
+        names = ['Cls', 'Bck', '(', ')',
                  '7', '8', '9', '/',
                 '4', '5', '6', '*',
                  '1', '2', '3', '-',
@@ -55,6 +58,7 @@ class MainUi(QtWidgets.QWidget):
         sender = self.sender()
         if self.isCalculate:
             self.input_Line.clear()
+            self.input_Line.setText(str(self.result))
         self.isCalculate = False
         if sender.text() == 'Close':
             self.close()
@@ -65,18 +69,19 @@ class MainUi(QtWidgets.QWidget):
             self.input_Line.setText(str(text)[0:-1])
         elif sender.text() == '=':
             text = self.input_Line.toPlainText()
-            result = self.calculate(str(text)[0:-1])
-            self.input_Line.append(str(result))
+            try:
+                self.result = Calculator.calculate(str(text))
+                self.input_Line.append(str(self.result))
+                self.isCalculate = True
+            except Exception as e:
+                self.input_Line.clear()
+                logging.warn('表达式格式不对')
         else:
             text = self.input_Line.toPlainText()
             self.input_Line.setText(text+sender.text())
 
-    def calculate(self,expression=''):
-        self.isCalculate = True
-        return 0
 
 if __name__ == '__main__':
-    sys.
     app = QtWidgets.QApplication(sys.argv)
     ex = MainUi()
     sys.exit(app.exec_())
