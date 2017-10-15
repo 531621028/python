@@ -45,16 +45,18 @@ class Crawler:
     """Crawl a set of URLs.
     This manages two sets of URLs: 'urls' and 'done'.  'urls' is a set of
     URLs seen, and 'done' is a list of FetchStatistics.
-    #参数定义的顺序必须是：必选参数、默认参数、可变参数和关键字参数。
+    参数定义的顺序必须是：必选参数、默认参数、可变参数、命名关键字参数和关键字参。
+    命名关键字参数与默认参数之间必须要有*号隔开，可变参数也可以作为分隔符；loop参数为命令关键字参数
+    命名关键字参数在传入时必须使用loop=loop的形式传入进来
     """
     def __init__(self, roots,
                  exclude=None, strict=True,  # What to crawl.
                  max_redirect=10, max_tries=4,  # Per-url limits.
                  max_tasks=10, *, loop=None):
-        #在Python 中，and 和 or 执行布尔逻辑演算，
-        #如你所期待的一样。但是它们并不返回布尔值，而是返回它们实际进行比较的值之一。
-        #and操作符从左到右扫描，返回第一个为假的表达式值，无假值则返回最后一个表达式值
-        #or操作符从左到右扫描，返回第一个为真的表达式值，无真值则返回最后一个表达式值。
+        # 在Python 中，and 和 or 执行布尔逻辑演算，
+        # 如你所期待的一样。但是它们并不返回布尔值，而是返回它们实际进行比较的值之一。
+        # and操作符从左到右扫描，返回第一个为假的表达式值，无假值则返回最后一个表达式值
+        # or操作符从左到右扫描，返回第一个为真的表达式值，无真值则返回最后一个表达式值。
         self.loop = loop or asyncio.get_event_loop()
         self.roots = roots
         self.exclude = exclude
@@ -68,9 +70,9 @@ class Crawler:
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.root_domains = set()
         for root in roots:
-            #urlparse将url拆分成六大组件
-            #urp = parse.urlparse('http://www.baidu.com:80/doc?age=5#ff')
-            #scheme='http', netloc='www.baidu.com:80', path='/doc', params='', query='age=5', fragment='ff'
+            # urlparse将url拆分成六大组件
+            # urp = parse.urlparse('http://www.baidu.com:80/doc?age=5#ff')
+            # scheme='http', netloc='www.baidu.com:80', path='/doc', params='', query='age=5', fragment='ff'
             parts = urllib.parse.urlparse(root)
             host, port = urllib.parse.splitport(parts.netloc)
             if not host:
@@ -277,3 +279,7 @@ class Crawler:
         self.t1 = time.time()
         for w in workers:
             w.cancel()
+        self.session.close()
+
+crawler = Crawler('https://www.baidu.com')
+crawler.crawl()

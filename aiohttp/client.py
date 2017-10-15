@@ -1,11 +1,11 @@
-import aiohttp
 import asyncio
-import requests
 from datetime import datetime
 
+import aiohttp
+import requests
 from aiohttp import ClientSession
 
-r = 1000
+r = 100
 
 
 # async def hello(url, i):
@@ -26,38 +26,34 @@ r = 1000
 async def fetch(session, url, sem=asyncio.Semaphore(100)):
 # async def fetch(session, url):
     # async with ClientSession() as session:
-    # async with sem:
-    async with session.get(url) as response:
-        delay = response.headers.get("DELAY")
-        d = response.headers.get("DATE")
-        print("{}:{} delay {}".format(d, response.url, delay))
-        return await response.read()
-
-
-async def bound_fetch(sem, session, url):
-    # getter function with semaphore
     async with sem:
-        await fetch(session, url)
+        async with session.get(url) as response:
+            delay = response.headers.get("DELAY")
+            d = response.headers.get("DATE")
+            print("{}:{} delay {}".format(d, response.url, delay))
+            return await response.read()
 
 
-async def run(loop, r):
+async def run(r):
     url = "http://httpbin.org/{}"
     # url = "http://localhost:8080/{}"
     tasks = []
-    sem = asyncio.Semaphore(500)
+    sem = asyncio.Semaphore(100)
     async with ClientSession() as session:
         for i in range(r):
             # pass Semaphore to every GET request
             task = asyncio.ensure_future(fetch(session, url.format(i), sem))
-            #task = asyncio.ensure_future(bound_fetch(sem, session, url.format(i)))
+            # task = asyncio.ensure_future(bound_fetch(sem, session, url.format(i)))
             tasks.append(task)
             # you now have all response bodies in this variable
+        # responses = await asyncio.gather(*tasks)
         responses = await asyncio.gather(*tasks)
+        print(responses)
 
 
 loop = asyncio.get_event_loop()
 start = datetime.now()
-future = asyncio.ensure_future(run(loop, r))
+future = asyncio.ensure_future(run(r))
 loop.run_until_complete(future)
 print(datetime.now() - start)
 

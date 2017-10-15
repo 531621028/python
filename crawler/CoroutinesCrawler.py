@@ -44,7 +44,6 @@ class Crawler:
     def work(self):
         while True:
             url, max_redirect = yield from self.q.get()
-
             # Download page and add new links to self.q.
             yield from self.fetch(url, max_redirect)
             self.q.task_done()
