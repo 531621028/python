@@ -29,16 +29,10 @@ def is_redirect(response):
     return response.status in (300, 301, 302, 303, 307)
 
 
-FetchStatistic = namedtuple('FetchStatistic',
-                            ['url',
-                             'next_url',
-                             'status',
-                             'exception',
-                             'size',
-                             'content_type',
-                             'encoding',
-                             'num_urls',
-                             'num_new_urls'])
+FetchStatistic = namedtuple('FetchStatistic', [
+    'url', 'next_url', 'status', 'exception', 'size', 'content_type',
+    'encoding', 'num_urls', 'num_new_urls'
+])
 
 
 class Crawler:
@@ -49,10 +43,17 @@ class Crawler:
     命名关键字参数与默认参数之间必须要有*号隔开，可变参数也可以作为分隔符；loop参数为命令关键字参数
     命名关键字参数在传入时必须使用loop=loop的形式传入进来
     """
-    def __init__(self, roots,
-                 exclude=None, strict=True,  # What to crawl.
-                 max_redirect=10, max_tries=4,  # Per-url limits.
-                 max_tasks=10, *, loop=None):
+
+    def __init__(
+            self,
+            roots,
+            exclude=None,
+            strict=True,  # What to crawl.
+            max_redirect=10,
+            max_tries=4,  # Per-url limits.
+            max_tasks=10,
+            *,
+            loop=None):
         # 在Python 中，and 和 or 执行布尔逻辑演算，
         # 如你所期待的一样。但是它们并不返回布尔值，而是返回它们实际进行比较的值之一。
         # and操作符从左到右扫描，返回第一个为假的表达式值，无假值则返回最后一个表达式值
@@ -147,8 +148,7 @@ class Crawler:
                 text = yield from response.text()
 
                 # Replace href with (?:href|src) to follow image links.
-                urls = set(re.findall(r'''(?i)href=["']([^\s"'<>]+)''',
-                                      text))
+                urls = set(re.findall(r'''(?i)href=["']([^\s"'<>]+)''', text))
                 if urls:
                     LOGGER.info('got %r distinct urls from %r',
                                 len(urls), response.url)
@@ -186,38 +186,42 @@ class Crawler:
 
                 break
             except aiohttp.ClientError as client_error:
-                LOGGER.info('try %r for %r raised %r', tries, url, client_error)
+                LOGGER.info('try %r for %r raised %r', tries, url,
+                            client_error)
                 exception = client_error
 
             tries += 1
         else:
             # We never broke out of the loop: all tries failed.
-            LOGGER.error('%r failed after %r tries',
-                         url, self.max_tries)
-            self.record_statistic(FetchStatistic(url=url,
-                                                 next_url=None,
-                                                 status=None,
-                                                 exception=exception,
-                                                 size=0,
-                                                 content_type=None,
-                                                 encoding=None,
-                                                 num_urls=0,
-                                                 num_new_urls=0))
+            LOGGER.error('%r failed after %r tries', url, self.max_tries)
+            self.record_statistic(
+                FetchStatistic(
+                    url=url,
+                    next_url=None,
+                    status=None,
+                    exception=exception,
+                    size=0,
+                    content_type=None,
+                    encoding=None,
+                    num_urls=0,
+                    num_new_urls=0))
             return
 
         try:
             if is_redirect(response):
                 location = response.headers['location']
                 next_url = urllib.parse.urljoin(url, location)
-                self.record_statistic(FetchStatistic(url=url,
-                                                     next_url=next_url,
-                                                     status=response.status,
-                                                     exception=None,
-                                                     size=0,
-                                                     content_type=None,
-                                                     encoding=None,
-                                                     num_urls=0,
-                                                     num_new_urls=0))
+                self.record_statistic(
+                    FetchStatistic(
+                        url=url,
+                        next_url=next_url,
+                        status=response.status,
+                        exception=None,
+                        size=0,
+                        content_type=None,
+                        encoding=None,
+                        num_urls=0,
+                        num_new_urls=0))
 
                 if next_url in self.seen_urls:
                     return
@@ -272,14 +276,17 @@ class Crawler:
     @asyncio.coroutine
     def crawl(self):
         """Run the crawler until all finished."""
-        workers = [asyncio.Task(self.work(), loop=self.loop)
-                   for _ in range(self.max_tasks)]
+        workers = [
+            asyncio.Task(self.work(), loop=self.loop)
+            for _ in range(self.max_tasks)
+        ]
         self.t0 = time.time()
         yield from self.q.join()
         self.t1 = time.time()
         for w in workers:
             w.cancel()
         self.session.close()
+
 
 crawler = Crawler('https://www.baidu.com')
 crawler.crawl()

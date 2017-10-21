@@ -60,10 +60,12 @@ import re
 import aiohttp
 import asyncio
 import time
+import cgi
+
 
 async def crawl():
     print('crawler:')
-    tasks = [asyncio.ensure_future(work()) for _ in range(10)]
+    tasks = [asyncio.ensure_future(work()) for _ in range(1)]
     await asyncio.sleep(1)
     for w in tasks:
         print('c')
@@ -71,13 +73,16 @@ async def crawl():
 
 
 async def work():
-    print('work')
-    # async with aiohttp.ClientSession() as session:
-    #      async with session.get(url) as response:
-    #         delay = response.headers.get("DELAY")
-    #         d = response.headers.get("DATE")
-    #         print("{}:{} delay {}".format(d, response.url, delay))
-    #         return await response.read()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                content_type = response.headers.get('content-type')
+                pdict = {}
+
+                if content_type:
+                    content_type, pdict = cgi.parse_header(content_type)
+                print(content_type, pdict)
+
 
 url = 'http://www.baidu.com'
 loop = asyncio.get_event_loop()
