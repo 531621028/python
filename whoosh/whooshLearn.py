@@ -7,8 +7,8 @@ from jieba.analyse import ChineseAnalyzer
 
 schema = Schema(
     title=TEXT(stored=True),
-    #content=TEXT(stored=True, analyzer=ChineseAnalyzer()),
-    content=TEXT(stored=True),
+    content=TEXT(stored=True, analyzer=ChineseAnalyzer()),
+    #content=TEXT(stored=True),
     path=ID(stored=True))
 
 if not os.path.exists("index"):
@@ -16,17 +16,17 @@ if not os.path.exists("index"):
 ix = create_in("index", schema)
 ix = open_dir("index")
 writer = ix.writer()
-writer.add_document(title=u"Ñ§Ï°", path=u"/a", content=u"ºú¿µ¿µ")
-writer.add_document(title=u"Ñ§Ï°", path=u"/a", content=u"hel lo world")
+writer.add_document(title=u"Ñ§Ï°", path=u"/a", content=u"hello ºú¿µ¿µ")
+writer.add_document(title=u"Ñ§Ï°", path=u"/a", content=u"hello world")
 writer.commit()
 searcher = ix.searcher()
 qp = QueryParser("content", schema=ix.schema)
-q = qp.parse(u"h* lo")
+q = qp.parse(u"hello")
 print(q)
 with ix.searcher() as s:
     results = s.search(q)
-    for hit in results:
-        print(hit.highlights("content"))
+    for result in results:
+        print(result.highlights("content"))
 # results = searcher.find('content', "th*")
 # for hit in results:
 #     print(hit.highlights("content"))
