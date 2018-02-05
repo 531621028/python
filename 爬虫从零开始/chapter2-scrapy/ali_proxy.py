@@ -43,7 +43,7 @@ def Out_file(alive_ip=[]):
     将符合要求的代理写入文件
     '''
     global dir_path
-    with open(dir_path + 'alive_ip.txt', 'a+') as f:
+    with open(dir_path + 'alive_ip.txt', 'w') as f:
         for ip in alive_ip:
             f.write(ip + '\n')
         print('所有存活ip都已经写入文件！')
