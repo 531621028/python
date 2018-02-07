@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import pymysql
-from cwl import utils 
+from cwl import utils
+
 # Define your item pipelines here
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
@@ -20,9 +21,10 @@ class CwlPipeline(object):
 
     def process_item(self, item, spider):
         print('------------blogPipelineBegin------------')
-        print('item', item)
         nums = item['nums']
-        sql = 'INSERT INTO record(qiHao,numOne,numTwo,numThr,numFou,numFiv,numSix,numSec) VALUES("{0}","{1}","{2}","{3}","{4}","{5}","{6}","{7}")'.format(item['qiHao'], nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], nums[6])
+        sql = 'INSERT INTO record(qiHao,numOne,numTwo,numThr,numFou,numFiv,numSix,numSec) VALUES("{0}","{1}","{2}","{3}","{4}","{5}","{6}","{7}")'.format(
+            item['qiHao'], nums[0], nums[1], nums[2], nums[3], nums[4],
+            nums[5], nums[6])
         cursor = self.db.cursor()
         try:
             # 执行sql语句
@@ -46,7 +48,13 @@ def initDb(spider):
     password = settings['PASSWORD']
     dbname = settings['DBNAME']
     print(host, port, username, password, dbname)
-    db = pymysql.connect(host=host, user=username, password=password, database=dbname, port=port, charset='utf8')
+    db = pymysql.connect(
+        host=host,
+        user=username,
+        password=password,
+        database=dbname,
+        port=port,
+        charset='utf8')
     return db
 
 

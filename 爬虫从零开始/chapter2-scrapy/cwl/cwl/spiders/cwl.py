@@ -15,7 +15,8 @@ class cwl(Spider):
         'USERNAME': 'root',
         'PASSWORD': 'root',
         'DBNAME': 'cwl',
-        'ITEM_PIPELINES': {'cwl.pipelines.CwlPipeline': 300}
+       'ITEM_PIPELINES': {'cwl.pipelines.CwlPipeline': 300},
+        'DOWNLOADER_MIDDLEWARES': {'cwl.middlewares.CwlMiddleware': 300}
     }
 
     # 重写第一次请求处理函数，要返回Request对象
@@ -31,11 +32,11 @@ class cwl(Spider):
         for record in recordList:
             item = CwlItem()
             ss = Selector(text=record)
-            item['qiHao'] = ss.xpath('//td[1]/text()').extract()[0]
+            item['qiHao'] = ss.xpath('//td[1]/text()').extract_first()
             nums = []
             for num in ss.xpath('//td[3]/span/text()').extract():
                 nums.append(num)
-            nums.append(ss.xpath('//td[4]/span/text()').extract()[0])
+            nums.append(ss.xpath('//td[4]/span/text()').extract_first())
             item['nums'] = nums
             yield item
 

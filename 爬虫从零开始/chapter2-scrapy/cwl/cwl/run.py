@@ -1,4 +1,4 @@
 from scrapy import cmdline
-name = 'cwl'
+name = 'zhcw'
 cmd = 'scrapy crawl {0}'.format(name)
 cmdline.execute(cmd.split())

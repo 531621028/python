@@ -11,23 +11,58 @@ from scrapy import signals
 from selenium import webdriver
 from scrapy.http import HtmlResponse
 
-js = '''
-$('body > div.wqkj.ssq > div > div.gjl > div.aqcx > dl > dd > ul > li:nth-child(3)').click()
-'''
 
 class CwlMiddleware(object):
+    js = '''
+    $('body > div.wqkj.ssq > div > div.gjl > div.aqcx > dl > dd > ul > li:nth-child(3)').click()
+    '''
 
-    @classmethod
-    def process_request(cls, request, spider):
-        if 'AJAX' in request.meta: # 如果网站使用AJAX则使用PhantomJS执行
-            driver = webdriver.PhantomJS()
-            driver.get(request.url)
-            driver.execute_script(js)
-            print('----------download middleware execuate------------')
-            time.sleep(1)  # 等待JS执行 
-            content = driver.page_source.encode('utf-8')
-            driver.quit()  
+    def __init__(self):
+        self.driver = webdriver.PhantomJS()
+
+    # 当每个request通过下载中间件时，该方法被调用
+    def process_request(self, request, spider):
+        print('----------download middleware process_request execuate--------')
+        if 'AJAX' in request.meta:  # 如果网站使用AJAX则使用PhantomJS执行
+            try:
+                self.driver.get(request.url)
+                self.driver.execute_script(CwlMiddleware.js)
+                self.driver.implicitly_wait(2)
+                content = self.driver.page_source.encode('utf-8')
+                return HtmlResponse(request.url, body=content, request=request)
+            except:
+                self.driver.quit()
+                
+    # 当每个request通过下载中间件时，该方法被调用
+    def process_response(self, request, response, spider):
+        print('----------download middleware process_response execuate-------')
+        return response
+
+    def __del__(self):
+        self.driver.quit()
+
+
+class ZhcwMiddleware(object):
+    def __init__(self):
+        self.driver = webdriver.PhantomJS()
+        print('************ZhcwMiddleware Init************')
+
+    # 当每个request通过下载中间件时，该方法被调用
+    def process_request(self, request, spider):
+        print('----------download middleware process_request execuate--------')
+        if 'AJAX' in request.meta:  # 如果网站使用AJAX则使用PhantomJS执行
+            self.driver.get(request.url)
+            content = self.driver.page_source.encode('utf-8')
             return HtmlResponse(request.url, body=content, request=request)
+
+    # 当每个request通过下载中间件时，该方法被调用
+    def process_response(self, request, response, spider):
+        print('----------download middleware process_response execuate-------')
+        return response
+
+    def __del__(self):
+        self.driver.quit()
+        print('************ZhcwMiddleware Destroy************')
 
 
 class CwlSpiderMiddleware(object):
