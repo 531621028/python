@@ -7,21 +7,27 @@ import pymysql
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 
-class BlogPipeline(object):
+class CwlPipeline(object):
     def process_item(self, item, spider):
         print('------------blogPipelineBegin------------')
+        print('item', item)
+        nums = item['nums']
+        sql = 'INSERT INTO record(qiHao,numOne,numTwo,numThr,numFou,numFiv,numSix,numSec) VALUES("{0}","{1}","{2}","{3}","{4}","{5}","{6}","{7}")'.format(item['qiHao'], nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], nums[6])
         db = initDb(spider)
         cursor = db.cursor()
-        sql = 'INSERT INTO blog(title,slug,content,createTime,author) VALUES("{0}","{1}","{2}","{3}","{4}")'.format(item['article_name'],item['article_slug'],item['article_content'],item['article_ctime'],item['article_author'])
         try:
             # 执行sql语句
+            print(sql)
             cursor.execute(sql)
             # 执行sql语句
             db.commit()
+            print('写入数据库成功')
         except:
             # 发生错误时回滚
+            print('写入数据库失败')
             db.rollback()
         print('------------blogPipelineEnd------------')
+        closeDb(cursor)
 
 
 def initDb(spider):
@@ -31,8 +37,10 @@ def initDb(spider):
     username = settings['USERNAME']
     password = settings['PASSWORD']
     dbname = settings['DBNAME']
+    print(host, port, username, password, dbname)
     db = pymysql.connect(host=host, user=username, password=password, database=dbname, port=port, charset='utf8')
     return db
+
 
 def closeDb(cursor):
     cursor.close()

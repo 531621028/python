@@ -18,10 +18,10 @@ class KdlspiderSpider(scrapy.Spider):
         item = ProxyItem()
 
         # 通过Xpath找到每条代理的内容
-        mian = response.xpath(
+        main = response.xpath(
             '//table[@class="table table-bordered table-striped"]/tbody/tr')
 
-        for li in mian:
+        for li in main:
             # 找到ip地址
             ip = li.xpath('td/text()').extract()[0]
             # 找到端口：
