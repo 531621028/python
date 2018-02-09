@@ -6,6 +6,7 @@
 # http://doc.scrapy.org/en/latest/topics/items.html
 
 from scrapy import Item, Field
+from sqlalchemy import Column, String, create_engine
 
 
 class JdItem(Item):
@@ -14,7 +15,6 @@ class JdItem(Item):
     good_name = Field()       # '商品名称'
     price = Field()      # '商品价格'
     comment_sum = Field()   # '商品评论总数'
-    good_comment_rate = Field()      # '商品好评率'
     shop_name = Field()  # '店铺名称'
     link = Field()   # '商品链接'
     date = Field()   # '爬取日期'

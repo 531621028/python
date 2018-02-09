@@ -4,9 +4,12 @@
 #
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
-
+import time
 from scrapy import signals
 from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from scrapy.http import HtmlResponse
 
 
@@ -20,8 +23,17 @@ class JdMiddleware(object):
         print('----------download middleware process_request execuate--------')
         if 'AJAX' in request.meta:  # 如果网站使用AJAX则使用PhantomJS执行
             self.driver.get(request.url)
+            # 查找元素并点击
+            # self.driver.find_element_by_xpath('//*[@id="detail"]/div[1]/ul/li[5]').click()
+            # WebDriverWait(self.driver, 20, 0.5).until(
+            #     EC.presence_of_element_located(
+            #         (By.XPATH,
+            #          '//div[@id="comment"]/div[2]/div[1]/div[2]')))
+
             content = self.driver.page_source.encode('utf-8')
-            return HtmlResponse(request.url, body=content, request=request)
+            # 这只返回的编码为utf-8
+            return HtmlResponse(
+                request.url, body=content, request=request, encoding='utf-8')
 
     # 当每个request通过下载中间件时，该方法被调用
     def process_response(self, request, response, spider):
