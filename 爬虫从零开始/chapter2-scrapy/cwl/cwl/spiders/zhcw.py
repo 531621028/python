@@ -26,7 +26,7 @@ def getQiHao(line):
 class zhcw(Spider):
     urlDict = {}
     name = 'zhcw'
-    start_urls = ['http://www.zhcw.com/ssq/kjgg/index_24.shtml']
+    start_urls = ['http://www.zhcw.com/ssq/kjgg']
     base_url = 'http://www.zhcw.com'
     custom_settings = {
         'HOST': 'localhost',
